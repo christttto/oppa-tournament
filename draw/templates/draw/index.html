@@ -34,11 +34,11 @@
   socket.onmessage = function (event) {
     console.log(event.data);
   }
-  function drawCircle(xCoord,yCoord){
+  var myColor = 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
+  function drawCircle(xCoord,yCoord, myColor){
     var myPoint = new paper.Point(xCoord, yCoord);
     var myCircle = new paper.Path.Circle(myPoint,30);
-    myCircle.fillColor = "purple"
-    
+    myCircle.fillColor = myColor;
   }
   $(document).ready(function(){
       $(myCanvas).mousemove(function(){
@@ -47,7 +47,7 @@
           date: Date.now(),
           xCoord: event.clientX,
           yCoord: event.clientY,
-          fillColor: "purple"
+          fillColor: myColor
         }
         socket.onopen = socket.send(JSON.stringify(myData));
         console.log(event);
@@ -55,7 +55,7 @@
         //for everyone
         socket.onmessage = function (event) {
           curData= JSON.parse(event.data);
-          drawCircle(curData.xCoord,curData.yCoord);
+          drawCircle(curData.xCoord,curData.yCoord,curData.fillColor);
           console.log("ertw");//update dot
         }
       });
