@@ -28,6 +28,8 @@
 
   // getting the URL (you may want to use for Exercise 3)
   var url = window.location.href;
+  var mySize = url.split('=')[1];
+  
   var socket = new WebSocket('ws://p4-christttto-christttto412990.codeanyapp.com:8765/');
   socket.onmessage = function(e){console.log(event.data);};
   socket.onopen = () => socket.send("hi");//add here
@@ -40,14 +42,19 @@
     var myCircle = new paper.Path.Circle(myPoint,30);
     myCircle.fillColor = myColor;
   }
+  var myData = {
+    date: Date.now(),
+    xCoord:null,
+    yCoord:null,
+    fillColor: null
+  }
   $(document).ready(function(){
       $(myCanvas).mousemove(function(){
         //something for just me
-        var myData = {
-          date: Date.now(),
-          xCoord: event.clientX,
-          yCoord: event.clientY,
-          fillColor: myColor
+        if(mySize == 'small'){
+          myData.xCoord=event.clientX;
+          myData.yCoord=event.clientY;
+          myData.fillColor=myColor;
         }
         socket.onopen = socket.send(JSON.stringify(myData));
         console.log(event);
@@ -55,7 +62,22 @@
         //for everyone
         socket.onmessage = function (event) {
           curData= JSON.parse(event.data);
-          drawCircle(curData.xCoord,curData.yCoord,curData.fillColor);
+          var viewXCoord;
+          var viewYCoord;
+          var viewFillColor;
+          if(mySize == 'small'){
+            viewXCoord = myData.xCoord;
+            viewYCoord = myData.yCoord;
+            viewFillColor = myData.fillColor;
+            console.log("smolllll doge");
+          }
+          if(mySize == 'large'){
+            viewXCoord = curData.xCoord;
+            viewYCoord = curData.yCoord;
+            viewFillColor = curData.fillColor;
+            console.log("large doge");
+          }
+          drawCircle(viewXCoord,viewYCoord,viewFillColor);
           console.log("ertw");//update dot
         }
       });
