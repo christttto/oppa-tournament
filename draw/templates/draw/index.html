@@ -49,38 +49,43 @@
     fillColor: null
   }
   $(document).ready(function(){
-      $(myCanvas).mousemove(function(){
-        //something for just me
+    window.addEventListener("orientationchange", function() {
+      if(-70>window.orientation){
+        myColor = 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
+      }
+    });
+    $(myCanvas).mousemove(function(){
+      //something for just me
+      if(mySize == 'small'){
+        myData.xCoord=event.clientX;
+        myData.yCoord=event.clientY;
+        myData.fillColor=myColor;
+      }
+      socket.onopen = socket.send(JSON.stringify(myData));
+      console.log(event);
+
+      //for everyone
+      socket.onmessage = function (event) {
+        curData= JSON.parse(event.data);
+        var viewXCoord;
+        var viewYCoord;
+        var viewFillColor;
         if(mySize == 'small'){
-          myData.xCoord=event.clientX;
-          myData.yCoord=event.clientY;
-          myData.fillColor=myColor;
+          viewXCoord = myData.xCoord;
+          viewYCoord = myData.yCoord;
+          viewFillColor = myData.fillColor;
+          console.log("smolllll doge");
         }
-        socket.onopen = socket.send(JSON.stringify(myData));
-        console.log(event);
-        
-        //for everyone
-        socket.onmessage = function (event) {
-          curData= JSON.parse(event.data);
-          var viewXCoord;
-          var viewYCoord;
-          var viewFillColor;
-          if(mySize == 'small'){
-            viewXCoord = myData.xCoord;
-            viewYCoord = myData.yCoord;
-            viewFillColor = myData.fillColor;
-            console.log("smolllll doge");
-          }
-          if(mySize == 'large'){
-            viewXCoord = curData.xCoord;
-            viewYCoord = curData.yCoord;
-            viewFillColor = curData.fillColor;
-            console.log("large doge");
-          }
-          drawCircle(viewXCoord,viewYCoord,viewFillColor);
-          console.log("ertw");//update dot
+        if(mySize == 'large'){
+          viewXCoord = curData.xCoord;
+          viewYCoord = curData.yCoord;
+          viewFillColor = curData.fillColor;
+          console.log("large doge");
         }
-      });
+        drawCircle(viewXCoord,viewYCoord,viewFillColor);
+        console.log("ertw");//update dot
+      }
+    });
   });
   alert("asdf");
   
